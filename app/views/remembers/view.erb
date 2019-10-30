@@ -1,0 +1,14 @@
+<h1>View Remember</h1>
+<a href="/remembers">Go Back</a>
+
+<h4><%=@remember.phrase%></h4>
+<h4><%=@remember.answer%></h4>
+
+<a href="/remembers/<%=@remember.id%>/edit">edit</a>
+
+<form method="post" action="/remembers/<%=@remember.id%>">
+<input type="hidden" id="hidden" name="_method" value="DELETE">
+<input type="submit" value="delete">
+
+
+</form>
