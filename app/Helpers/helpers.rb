@@ -19,4 +19,29 @@ class Helpers
       end
     end
   end
+
+  def self.check_email(email)
+    if email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
+      true
+    else
+      false
+    end
+  end
+
+  def self.email_used?(email)
+    if User.find_by(email: email)
+      true
+    else
+      false
+    end
+  end
+
+  def self.username_used?(username)
+    if User.find_by(username: username)
+      true
+    else
+      false
+    end
+  end
+
 end

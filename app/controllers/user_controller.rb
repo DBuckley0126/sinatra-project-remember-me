@@ -9,6 +9,19 @@ class UserController < ApplicationController
     if params.has_value?("")
       flash[:error] = "Not all inputs have been filled in!"
       redirect '/signup'
+
+    elsif !Helpers.check_email(params[:email])
+      flash[:error] = "Invalid Email!"
+      redirect '/signup'   
+
+    elsif Helpers.email_used?(params[:email])
+      flash[:error] = "Email already in use!"
+      redirect '/signup'
+
+    elsif Helpers.username_used?(params[:username])  
+      flash[:error] = "Username already in use!"
+      redirect '/signup'
+
     else
       User.create(params)
       redirect '/login'
