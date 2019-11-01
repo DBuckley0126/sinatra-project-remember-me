@@ -18,10 +18,6 @@ class UserController < ApplicationController
       flash[:error] = "Email already in use!"
       redirect '/signup'
 
-    elsif Helpers.username_used?(params[:username])  
-      flash[:error] = "Username already in use!"
-      redirect '/signup'
-
     else
       User.create(params)
       redirect '/login'
@@ -44,14 +40,14 @@ class UserController < ApplicationController
       flash[:error] = "Not all inputs have been filled in!"
       redirect '/login'
     else
-      @user = User.find_by(username: params[:username])
+      @user = User.find_by(email: params[:email])
       
       if @user && @user.authenticate(params[:password])
         session["user_id"] = @user.id
         flash[:alert] = "You are logged in"
         redirect '/'
       end
-      flash[:error] = "Your username or password can not be found!"
+      flash[:error] = "Your email or password can not be found!"
       redirect '/login'
     end
   end

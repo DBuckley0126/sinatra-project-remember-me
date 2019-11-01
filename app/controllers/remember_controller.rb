@@ -22,9 +22,7 @@ class RememberController < ApplicationController
   post '/remembers' do
     if Helpers.is_logged_in?(session)
       @user = Helpers.current_user(session)
-      @remember = Remember.new(params)
-      @remember.user = @user
-      @remember.save
+      Helpers.create_remember(@user, params[:phrase], params[:answer])
       flash[:alert] = "Created new Remember"
       redirect '/remembers'
     else

@@ -13,3 +13,7 @@ require_all 'app'
 
 require 'pry'
 require 'sinatra/flash'
+require 'json'
+require 'ralyxa'
+require 'net/http'
+

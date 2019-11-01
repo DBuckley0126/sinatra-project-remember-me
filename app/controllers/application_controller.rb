@@ -20,4 +20,7 @@ class ApplicationController < Sinatra::Base
       redirect '/signup'
     end
   end
+
 end
+
+
