@@ -62,14 +62,12 @@ class RememberController < ApplicationController
       redirect '/signup'
     end
   end
-
+  
   patch '/remembers/:id' do
     if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      @remember = Remember.find_by(user_id: @user.id, id: params[:id])
-      @remember.update(params["remember"])
+      remember = Helpers.update_remember(params, session)
       flash[:alert] = "Updated Remember"
-      redirect "/remembers/#{@remember.id}"
+      redirect "/remembers/#{remember.id}"
     else
       redirect '/signup'
     end

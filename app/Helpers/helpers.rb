@@ -2,7 +2,14 @@ class Helpers
 
   AMAZON_API_URL = "https://api.amazon.com/user/profile".freeze
 
-  def self.is_logged_in?(session) #returns boollean if user is logged in
+  # Checks if user is logged in
+  #
+  # @param [Session] session is the current user session object
+  #
+  # @return [Boolean]
+  #
+  # @type [Boolean]
+  def self.is_logged_in?(session)  #returns boollean if user is logged in
     if session
       User.find_by_id(session["user_id"])? true : false
     else
@@ -10,7 +17,14 @@ class Helpers
     end
   end
 
-  def self.current_user(session) #returns user object
+  # Returns current user
+  #
+  # @param [Session] session is the current user session object
+  #
+  # @return [User] returns User object
+  #
+  # @type [User]
+  def self.current_user(session)
     @user = User.find_by_id(session["user_id"])
     if @user
       @user
@@ -23,31 +37,37 @@ class Helpers
     end
   end
 
-  def self.check_email(email) #returns true if email is valid
-    if email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
-      true
-    else
-      false
-    end
+  # Checks if email is valid format
+  #
+  # @param [String] email is a user email
+  #
+  # @return [Boolean]
+  #
+  # @type [Boolean]
+  def self.check_email(email)
+    email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)? true : false
   end
 
-  def self.email_used?(email) #returns true if email is unique in database
-    if User.find_by(email: email)
-      true
-    else
-      false
-    end
+  # Checks if email has been previously used in database
+  #
+  # @param [String] email is a user email
+  #
+  # @return [Boolean]
+  #
+  # @type [Boolean]
+  def self.email_used?(email)
+    User.find_by(email: email)? true : false
   end
 
-  def self.username_used?(username) #returns true if username is unique in database
-    if User.find_by(username: username)
-      true
-    else
-      false
-    end
-  end
-
-  def self.auth_alexa(access_token, client = Net::HTTP) #returns hash from alexa access token which contains user object and history of account
+  # Handles Alexa authentication
+  #
+  # @param [String] access_token is a user API access token sent with the Alexa HTTP request
+  #
+  # @return [Hash] returns a hash containing a history key with value explaining how account was created/linked. Also a user key with a User object
+  #
+  # @type [Hash]
+  def self.auth_alexa(access_token)
+    client = Net::HTTP
     uri = URI.parse("#{AMAZON_API_URL}?access_token=#{access_token}")
     first_name = JSON.parse(client.get(uri))["name"].split(" ").first
     last_name = JSON.parse(client.get(uri))["name"].split(" ").last
@@ -73,24 +93,68 @@ class Helpers
     end
   end
 
-  def self.add_alexa_remember(request) #returns created remember object from alexa request
+  
+  # Creates remember from Alexa request
+  #
+  # @param [Request] request is a object which is created from the Ralyxa gem once the html request is passed into the Ralyxa::Skill.handle
+  #
+  # @return [Remember] returns created Rememeber object
+  #
+  # @type [Remember]
+  def self.add_alexa_remember(request)
     response = Helpers.auth_alexa(request.user_access_token)
     remember = Helpers.create_remember(response[:user], request.slot_value("phrase"), request.slot_value("answer"))
     remember
   end
 
-  def self.create_remember(user, phrase, answer) #returns created remember object from user object, phrase string and answer string
+  
+  # Creates Remember
+  #
+  # @param [User] user is a user object
+  # @param [String] phrase is a user phrase to invoke a answer
+  # @param [String] answer is a user answer to be a response to a phrase
+  #
+  # @return [Remember] returns created Rememeber object
+  #
+  # @type [Remember]
+  def self.create_remember(user, phrase, answer)
     remember = Remember.new(phrase: phrase.downcase, answer: answer.downcase)
     remember.user = user
     remember.save
     remember
   end
 
-  def self.fuzzy_match_remember(phrase, user) #returns remember object from phrase string and user object using fuzzy search (will always return an answer unless no words match)
+  
+  # Fuzzy match a phrase to Rememebers in database
+  # (will always return a result unless no words match)
+  #
+  # @param [String] phrase is a user phrase to invoke a answer
+  # @param [User] user is a user object
+  #
+  # @return [Remember] returns matched remember object
+  #
+  # @type [Remember]
+  def self.fuzzy_match_remember(phrase, user)
     fuzzy_object = FuzzyMatch.new(Remember.all.where(user: user), :read => :phrase, :must_match_at_least_one_word => true)
     fuzzy_object.find(phrase)
   end
 
-
+  
+  # Updates remember entity in database
+  #
+  # @param [Hash] params is the paramaters returned from the request
+  # @param [Session] session is the current user session object
+  #
+  # @return [Remember] returns updated remember
+  #
+  # @type [Rememeber]
+  def self.update_remember(params, session)
+    user = Helpers.current_user(session)
+    remember = Remember.find_by(user_id: user.id, id: params[:id])
+    remember.phrase = params[:remember][:phrase].downcase
+    remember.answer = params[:remember][:answer].downcase
+    remember.save
+    remember
+  end
 
 end
