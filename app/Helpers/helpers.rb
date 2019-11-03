@@ -80,7 +80,7 @@ class Helpers
   end
 
   def self.create_remember(user, phrase, answer) #returns created remember object from user object, phrase string and answer string
-    remember = Remember.new(phrase: phrase, answer: answer)
+    remember = Remember.new(phrase: phrase.downcase, answer: answer.downcase)
     remember.user = user
     remember.save
     remember
