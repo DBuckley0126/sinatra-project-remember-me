@@ -16,4 +16,5 @@ require 'sinatra/flash'
 require 'json'
 require 'ralyxa'
 require 'net/http'
+require 'fuzzy_match'
 

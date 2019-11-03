@@ -14,6 +14,7 @@ gem 'tux'
 gem 'sinatra-flash'
 gem 'ralyxa'
 gem 'activesupport'
+gem 'fuzzy_match', '~> 2.1'
 
 group :test do
   gem 'rspec'
