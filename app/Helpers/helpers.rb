@@ -9,13 +9,14 @@ class Helpers
   # @return [Boolean]
   #
   # @type [Boolean]
-  def self.is_logged_in?(session)  #returns boollean if user is logged in
+  def self.is_logged_in?(session)
     if session
       User.find_by_id(session["user_id"])? true : false
     else
       false
     end
   end
+
 
   # Returns current user
   #
@@ -26,6 +27,7 @@ class Helpers
   # @type [User]
   def self.current_user(session)
     @user = User.find_by_id(session["user_id"])
+    
     if @user
       @user
     else
@@ -36,6 +38,7 @@ class Helpers
       end
     end
   end
+
 
   # Checks if email is valid format
   #
@@ -48,6 +51,7 @@ class Helpers
     email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)? true : false
   end
 
+
   # Checks if email has been previously used in database
   #
   # @param [String] email is a user email
@@ -58,6 +62,7 @@ class Helpers
   def self.email_used?(email)
     User.find_by(email: email)? true : false
   end
+
 
   # Handles Alexa authentication
   #
@@ -155,6 +160,28 @@ class Helpers
     remember.answer = params[:remember][:answer].downcase
     remember.save
     remember
+  end
+
+  def self.test
+    variable = Mailjet::Send.create(messages: [{
+      'From'=> {
+        'Email'=> "rememberme.noreply@gmail.com",
+        'Name'=> "Remember Me"
+      },
+      'To'=> [
+        {
+          'Email'=> 'dannyboy.msn@hotmail.com',
+          'Name'=> 'Danny Buckley'
+        }
+      ],
+      'TemplateID'=> 1070034,
+      'TemplateLanguage'=> true,
+      'Subject'=> "Remember Me Account Confirmation",
+      'Variables'=> {
+        "temp_password" => "ERROR"
+      }
+    }])
+    p variable.attributes['Messages']
   end
 
 end

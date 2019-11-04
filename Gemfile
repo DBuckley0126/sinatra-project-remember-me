@@ -15,6 +15,8 @@ gem 'sinatra-flash'
 gem 'ralyxa'
 gem 'activesupport'
 gem 'fuzzy_match', '~> 2.1'
+gem 'mailjet'
+gem 'dotenv'
 
 group :test do
   gem 'rspec'

@@ -7,6 +7,4 @@ intent "Request" do
     remember_object = Helpers.fuzzy_match_remember(request.slot_value("phrase"), Helpers.auth_alexa(request.user_access_token)[:user])
 
     tell("#{remember_object.answer}.")
-
-    
 end

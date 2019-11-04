@@ -8,13 +8,27 @@ ActiveRecord::Base.establish_connection(
   :database => "db/#{ENV['SINATRA_ENV']}.sqlite"
 )
 
-require './app/controllers/application_controller'
-require_all 'app'
-
 require 'pry'
 require 'sinatra/flash'
 require 'json'
 require 'ralyxa'
 require 'net/http'
 require 'fuzzy_match'
+require 'mailjet'
+
+
+require './app/controllers/application_controller'
+require_all 'app'
+
+
+
+
+
+
+
+
+
+
+
+
 
