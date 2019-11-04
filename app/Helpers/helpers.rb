@@ -72,13 +72,14 @@ class Helpers
   #
   # @type [Hash]
   def self.auth_alexa(access_token)
+    #method setup
     client = Net::HTTP
     uri = URI.parse("#{AMAZON_API_URL}?access_token=#{access_token}")
     first_name = JSON.parse(client.get(uri))["name"].split(" ").first
     last_name = JSON.parse(client.get(uri))["name"].split(" ").last
     email = JSON.parse(client.get(uri))["email"]
 
-    #find alexa connected account
+    #find alexa connected account > return found connected user
     user = User.find_by(access_token: access_token)
     return {:history => "alexa connected account", :user => user} if user
 
@@ -91,9 +92,9 @@ class Helpers
       user.last_name = last_name
       user.save
       return {:history => "account linked", :user => user}
-    else
-      #make new user if no account has been found
-      new_user = User.create(first_name: first_name, last_name: last_name, email: email, access_token: access_token, password: "SET")
+    else #make new user if no account has been found
+      encrypted_temp_pass = Helpers.encrypt(Helpers.password_generator)
+      new_user = User.create(first_name: first_name, last_name: last_name, email: email, access_token: access_token, password: encrypted_temp_pass)
       return {:history => "account created", :user => new_user}
     end
   end
@@ -162,7 +163,7 @@ class Helpers
     remember
   end
 
-  def self.test
+  def self.send_verification_email(user, temp_pass)
     variable = Mailjet::Send.create(messages: [{
       'From'=> {
         'Email'=> "rememberme.noreply@gmail.com",
@@ -170,18 +171,34 @@ class Helpers
       },
       'To'=> [
         {
-          'Email'=> 'dannyboy.msn@hotmail.com',
-          'Name'=> 'Danny Buckley'
+          'Email'=> user.email,
+          'Name'=> "#{user.first_name} #{user.last_name}"
         }
       ],
       'TemplateID'=> 1070034,
       'TemplateLanguage'=> true,
       'Subject'=> "Remember Me Account Confirmation",
       'Variables'=> {
-        "temp_password" => "ERROR"
+        "temp_password" => temp_pass
       }
     }])
     p variable.attributes['Messages']
+  end
+
+  def self.encrypt(string)
+    Encryption.key = ENV['ENCRYPT_KEY']
+    encrypted_str = Encryption.encrypt(string)
+    encrypted_str
+  end
+
+  def self.decrypt(encrypted_string)
+    Encryption.key = ENV['ENCRYPT_KEY']
+    decrypted_data = Encryption.decrypt(encrypted_string)
+    decrypted_data
+  end
+
+  def self.password_generator
+    Passgen::generate
   end
 
 end

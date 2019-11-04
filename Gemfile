@@ -16,7 +16,8 @@ gem 'ralyxa'
 gem 'activesupport'
 gem 'fuzzy_match', '~> 2.1'
 gem 'mailjet'
-gem 'dotenv'
+gem 'encryption'
+gem 'cryptice-passgen', '~> 0.1.2'
 
 group :test do
   gem 'rspec'

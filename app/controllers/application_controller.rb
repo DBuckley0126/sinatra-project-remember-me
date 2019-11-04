@@ -8,11 +8,8 @@ class ApplicationController < Sinatra::Base
     set :views, Proc.new { File.join(root, "../views/") }
     register Sinatra::ActiveRecordExtension
     enable :sessions
-    #set :session_secret, "my_application_secret"
     set :session_secret, ENV['SESSION_SECRET']
     register Sinatra::Flash
-
-    
 
     Mailjet.configure do |config|
       config.api_key = ENV['MJ_APIKEY_PUBLIC']
@@ -20,7 +17,6 @@ class ApplicationController < Sinatra::Base
       config.api_version = "v3.1"
     end
     
-
   end
 
   get "/" do
