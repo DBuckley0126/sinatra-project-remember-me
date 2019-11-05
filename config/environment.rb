@@ -15,6 +15,8 @@ require 'ralyxa'
 require 'net/http'
 require 'fuzzy_match'
 require 'mailjet'
+require 'openssl'
+require 'passgen'
 
 
 require './app/controllers/application_controller'

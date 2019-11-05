@@ -4,7 +4,10 @@ intent "Remember" do
 
     return tell("Please autenticate Remember Me via the Alexa app by saying, Launch Remember Me") unless request.user_access_token_exists?
 
-    Helpers.add_alexa_remember(request)
-
-    tell("This has now been remembered")
+    if request.slot_value("confimation") == "no"
+        tell("This has not been remembered")
+    else
+        Helpers.add_alexa_remember(request)
+        tell("This has now been remembered")
+    end
 end

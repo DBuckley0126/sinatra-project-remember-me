@@ -1,3 +1,5 @@
+require 'active_support/core_ext/array/conversions'
+
 intent "LaunchRequest" do
   return tell("Please autenticate Remember Me via the Alexa app.", card: link_account_card) unless request.user_access_token_exists?
 

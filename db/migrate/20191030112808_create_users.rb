@@ -6,7 +6,9 @@ class CreateUsers < ActiveRecord::Migration
       t.text :access_token
       t.string :first_name
       t.string :last_name
-      t.string :temp_password
+      t.text :temp_password
+      t.boolean :verified
+      t.text :vector
     end
   end
 end

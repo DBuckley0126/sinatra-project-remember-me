@@ -19,7 +19,9 @@ class UserController < ApplicationController
       redirect '/signup'
 
     else
-      User.create(params)
+      user = User.create(params)
+      user.verified = 1
+      user.save
       redirect '/login'
     end
   end
@@ -28,6 +30,7 @@ class UserController < ApplicationController
     if Helpers.is_logged_in?(session)
       flash[:alert] = "You are already logged in"
       redirect '/'
+
     else
       flash[:alert]
       flash[:error]
@@ -46,8 +49,17 @@ class UserController < ApplicationController
         session["user_id"] = @user.id
         flash[:alert] = "You are logged in"
         redirect '/'
+        
+      elsif @user && @user.verified == false
+        flash[:error] = "Your account needs to be verified!"
+        redirect '/login'
+
+      elsif @user && !@user.authenticate(params[:password])
+        flash[:error] = "Your password is incorrect!"
+        redirect '/login'
       end
-      flash[:error] = "Your email or password can not be found!"
+
+      flash[:error] = "Your email can not be found!"
       redirect '/login'
     end
   end
@@ -58,7 +70,45 @@ class UserController < ApplicationController
       flash[:alert] = "You have been logged out"
       redirect '/login'
     else
+
       redirect '/signup'
     end
   end
+
+  get '/user/password-reset' do
+    if Helpers.is_logged_in?(session)
+      flash[:alert]
+      @user = Helpers.current_user(session)
+      erb :'users/password_reset'
+
+    else
+      redirect '/signup'
+    end
+  end
+
+  patch '/user/password-reset' do
+    if Helpers.is_logged_in?(session)
+      user = Helpers.current_user(session)
+
+      if params.has_value?("")
+        flash[:alert] = "Please complete all inputs"
+        redirect '/user/password-reset'
+
+      elsif user && user.authenticate(params["info"]["old_password"])
+        
+        Helpers.update_password(params, session)
+        flash[:alert] = "Updated password"
+        redirect '/'
+
+      else
+        flash[:alert] = "Current password entered incorrectly"
+        redirect '/user/password-reset'
+      end
+
+    else
+      redirect '/signup'
+    end
+  end
+
+
 end

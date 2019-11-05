@@ -58,7 +58,6 @@ class Helpers
   #
   # @return [Boolean]
   #
-  # @type [Boolean]
   def self.email_used?(email)
     User.find_by(email: email)? true : false
   end
@@ -93,8 +92,7 @@ class Helpers
       user.save
       return {:history => "account linked", :user => user}
     else #make new user if no account has been found
-      encrypted_temp_pass = Helpers.encrypt(Helpers.password_generator)
-      new_user = User.create(first_name: first_name, last_name: last_name, email: email, access_token: access_token, password: encrypted_temp_pass)
+      new_user = User.create(first_name: first_name, last_name: last_name, email: email, access_token: access_token, password: Helpers.password_generator, verified: false)
       return {:history => "account created", :user => new_user}
     end
   end
@@ -186,19 +184,63 @@ class Helpers
   end
 
   def self.encrypt(string)
-    Encryption.key = ENV['ENCRYPT_KEY']
-    encrypted_str = Encryption.encrypt(string)
-    encrypted_str
+    cipher = OpenSSL::Cipher::AES256.new :CBC
+    cipher.encrypt
+    iv = cipher.random_iv
+    cipher.key = ENV['ENCRYPT_KEY']
+
+    cipher_text = cipher.update(string) + cipher.final
+    {"encrypted_string" => cipher_text, "vector" => iv}
   end
 
-  def self.decrypt(encrypted_string)
-    Encryption.key = ENV['ENCRYPT_KEY']
-    decrypted_data = Encryption.decrypt(encrypted_string)
-    decrypted_data
+  def self.decrypt(encrypted_string, iv)
+    decipher = OpenSSL::Cipher::AES256.new :CBC
+    decipher.decrypt
+    decipher.iv = iv
+    decipher.key = ENV['ENCRYPT_KEY']
+
+    decipher_text = decipher.update(encrypted_string) + decipher.final
+    decipher_text
   end
 
   def self.password_generator
     Passgen::generate
+  end
+
+  def self.alexa_email_verified_check(email)
+    User.find_by(email: email, verified: true)? true : false
+  end
+
+  def self.alexa_temp_password_send(email)
+    user = User.find_by(email: email, verified: false)
+    temp_pass = Helpers.password_generator
+    encryption_hash = Helpers.encrypt(temp_pass)
+    user.password = temp_pass
+    user.temp_password = encryption_hash["encrypted_string"]
+    user.vector = encryption_hash["vector"]
+    user.save
+    Helpers.send_verification_email(user, temp_pass)
+  end
+
+  def self.alexa_temp_password_check(email, temp_password)
+    user = User.find_by(email: email, verified: false)
+    decrypted_temp_pass = Helpers.decrypt(user.temp_password, user.vector)
+    if decrypted_temp_pass == temp_password
+      user.verified = true
+      user.temp_password = ""
+      user.save
+      user
+    else
+      false
+    end
+  end
+
+  def self.update_password(params, session)
+    user = Helpers.current_user(session)
+    if user && user.authenticate(params["info"]["old_password"])
+      user.password = params["user"]["password"]
+      user.save
+    end
   end
 
 end
