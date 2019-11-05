@@ -17,7 +17,6 @@ class Helpers
     end
   end
 
-
   # Returns current user
   #
   # @param [Session] session is the current user session object
@@ -39,7 +38,6 @@ class Helpers
     end
   end
 
-
   # Checks if email is valid format
   #
   # @param [String] email is a user email
@@ -51,7 +49,6 @@ class Helpers
     email.match(/\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)? true : false
   end
 
-
   # Checks if email has been previously used in database
   #
   # @param [String] email is a user email
@@ -61,7 +58,6 @@ class Helpers
   def self.email_used?(email)
     User.find_by(email: email)? true : false
   end
-
 
   # Handles Alexa authentication
   #
@@ -97,7 +93,6 @@ class Helpers
     end
   end
 
-  
   # Creates remember from Alexa request
   #
   # @param [Request] request is a object which is created from the Ralyxa gem once the html request is passed into the Ralyxa::Skill.handle
@@ -111,7 +106,6 @@ class Helpers
     remember
   end
 
-  
   # Creates Remember
   #
   # @param [User] user is a user object
@@ -128,7 +122,6 @@ class Helpers
     remember
   end
 
-  
   # Fuzzy match a phrase to Rememebers in database
   # (will always return a result unless no words match)
   #
@@ -143,7 +136,6 @@ class Helpers
     fuzzy_object.find(phrase)
   end
 
-  
   # Updates remember entity in database
   #
   # @param [Hash] params is the paramaters returned from the request
@@ -161,7 +153,15 @@ class Helpers
     remember
   end
 
-  def self.send_verification_email(user, temp_pass)
+  # Sends a verification email
+  #
+  # @param [User] user is a User Object
+  # @param [String] temp_pass is the temporary password to be sent with the email
+  #
+  # @return [Hash] Returns hash of message attributes
+  #
+  # @type [Hash]
+  def self.send_verification_email(user, temp_pass) 
     variable = Mailjet::Send.create(messages: [{
       'From'=> {
         'Email'=> "rememberme.noreply@gmail.com",
@@ -183,7 +183,15 @@ class Helpers
     p variable.attributes['Messages']
   end
 
-  def self.encrypt(string)
+  # Encrypts a string using AES265 standard
+  # This method requires a 16 byte key set with a local ENVIROMENT variable
+  #
+  # @param [String] string is the string that will be encrypted
+  #
+  # @return [Hash] returns hash with encrypted string and the randomly generated vector key
+  #
+  # @type [Hash]
+  def self.encrypt(string) 
     cipher = OpenSSL::Cipher::AES256.new :CBC
     cipher.encrypt
     iv = cipher.random_iv
@@ -193,7 +201,15 @@ class Helpers
     {"encrypted_string" => cipher_text, "vector" => iv}
   end
 
-  def self.decrypt(encrypted_string, iv)
+  # Decrypts a string using AES256 standard
+  #
+  # @param [String] encrypted_string is the encrypted string
+  # @param [String] iv is the vector key that was used to encrypt the string
+  #
+  # @return [String] returns the decrypted string
+  #
+  # @type [String]
+  def self.decrypt(encrypted_string, iv) 
     decipher = OpenSSL::Cipher::AES256.new :CBC
     decipher.decrypt
     decipher.iv = iv
@@ -203,15 +219,30 @@ class Helpers
     decipher_text
   end
 
-  def self.password_generator
+  # Generates random password
+  #
+  # @return [String] returns randomly generated password
+  #
+  def self.password_generator 
     Passgen::generate
   end
 
-  def self.alexa_email_verified_check(email)
+  # Checks if provided email has already been veriefied
+  #
+  # @param [String] email is the email the user provided
+  #
+  # @return [Boolean]
+  #
+  # @type [Boolean]
+  def self.alexa_email_verified_check(email) 
     User.find_by(email: email, verified: true)? true : false
   end
 
-  def self.alexa_temp_password_send(email)
+  # Sends temporary password email
+  #
+  # @param [String] email is the email the user provided
+  #
+  def self.alexa_temp_password_send(email) 
     user = User.find_by(email: email, verified: false)
     temp_pass = Helpers.password_generator
     encryption_hash = Helpers.encrypt(temp_pass)
@@ -222,7 +253,16 @@ class Helpers
     Helpers.send_verification_email(user, temp_pass)
   end
 
-  def self.alexa_temp_password_check(email, temp_password)
+  # Checks if temporary password matches on in database
+  #
+  # @param [String] email is the email the user provided 
+  # @param [String] temp_password is the temporary password the user provided
+  #
+  # @return [User, Boolean] returns a User object if temporary password matches and 
+  # returns false if temporary password does not match one in datbase
+  #
+  # @type [User, Boolean]
+  def self.alexa_temp_password_check(email, temp_password) 
     user = User.find_by(email: email, verified: false)
     decrypted_temp_pass = Helpers.decrypt(user.temp_password, user.vector)
     if decrypted_temp_pass == temp_password
@@ -235,7 +275,12 @@ class Helpers
     end
   end
 
-  def self.update_password(params, session)
+  # Updates users password
+  #
+  # @param [Hash] params is the params conatined within the request
+  # @param [Hash] session is the current session accosiated with the user
+  #
+  def self.update_password(params, session) 
     user = Helpers.current_user(session)
     if user && user.authenticate(params["info"]["old_password"])
       user.password = params["user"]["password"]
