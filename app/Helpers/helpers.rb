@@ -164,7 +164,7 @@ class Helpers
   def self.send_verification_email(user, temp_pass) 
     variable = Mailjet::Send.create(messages: [{
       'From'=> {
-        'Email'=> "rememberme.noreply@gmail.com",
+        'Email'=> ENV['FROM_EMAIL'],
         'Name'=> "Remember Me"
       },
       'To'=> [
@@ -173,7 +173,7 @@ class Helpers
           'Name'=> "#{user.first_name} #{user.last_name}"
         }
       ],
-      'TemplateID'=> 1070034,
+      'TemplateID'=> ENV['MAILJET_TEMPLATE_ID'],
       'TemplateLanguage'=> true,
       'Subject'=> "Remember Me Account Confirmation",
       'Variables'=> {

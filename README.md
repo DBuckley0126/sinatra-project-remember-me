@@ -1,87 +1,56 @@
 # sinatra-project-remember-me
 
-A Sinatra web application that allows the user to create an account, and write things they would like to remind their future selves. This will also have a Alexa interface to interact with the service.
+A Sinatra web application to help you to remember the little things in life with a simple phrase and answer This will also have a Alexa interface to interact with the service.
+
+Where did I leave my keys? 
+What time did I walk the dog? 
+What date is my doctor appointment? 
+Who do I need to write a birthday card for this month?
+When did I last check my car oil level?
+
+Remember anything with Remember Me!
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Clone or download the repository to your local machine and after open your terminal on the repo and run :
+bundle install
+rake db:migrate
 
-### Prerequisites
+run 'shotgun' in terminal to begin local hosting of Sinatra application.
+Use Ngrok to tunnel data to local server for Alexa requests
 
-What things you need to install the software and how to install them
 
-```
-Give examples
-```
+### Enviroment Variables
 
-### Installing
+General application variables
 
-A step by step series of examples that tell you how to get a development env running
+SESSION_SECRET= Random long key
+ENCRYPT_KEY = 16 byte encryption key that Cipher used to encrypt AES256 standard
 
-Say what the step will be
+To intergrate Alexa and Mailjet variables
 
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
+MJ_APIKEY_PUBLIC= This is your Mailjet public API key
+MJ_APIKEY_PRIVATE= This is your Mailjet public API key
+export FROM_EMAIL= This is the email address that Mailjet will send emails from
+export MAILJET_TEMPLATE_ID= This is your mailjet template for sending temporary passwords to the user
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Sinatra](https://github.com/sinatra/sinatra) - Used for the web development framework
+* [Ralyxa](https://github.com/sjmog/ralyxa) - Used to handle Alexa requests
+* [Sinatra ActiveRecord](https://github.com/sinatra-activerecord/sinatra-activerecord) - Used to handle SQLite database
+* [SQLite](https://www.sqlite.org/index.html) - Used for application database
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+This application uses Semantic Versioning.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Danny Buckley** - *Initial work* - [Me](https://github.com/DBuckley0126)
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
