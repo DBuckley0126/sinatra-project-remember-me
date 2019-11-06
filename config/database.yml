@@ -6,9 +6,10 @@ default: &default
   pool: 5
 
 development:
-  <<: *default
-  database: "mylocaldb"
-
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
 test:
   <<: *default
   database: "test_database_name"
