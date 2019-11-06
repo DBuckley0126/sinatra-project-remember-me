@@ -50,3 +50,4 @@ build-iPhoneSimulator/
 .rvmrc
 sendgrid.env
 sendgrid.env
+config/database.yml
