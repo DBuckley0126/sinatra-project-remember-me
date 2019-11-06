@@ -1,4 +1,4 @@
-class CreateRemembers < ActiveRecord::Migration[4.2]
+class CreateRemembers < ActiveRecord::Migration
   def change
     create_table :remembers do |t|
       t.string :phrase
