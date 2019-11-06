@@ -1,8 +1,18 @@
-development:
+default: &default
+  adapter: postgresql
   encoding: unicode
+  # For details on connection pooling, see rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: 5
 
+development:
+  <<: *default
+  database: "mylocaldb"
+
+test:
+  <<: *default
+  database: "test_database_name"
 
 production:
-  encoding: unicode
-  pool: 5
+  <<: *default
+  database: "production_database_name"
