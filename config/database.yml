@@ -1,0 +1,8 @@
+development:
+  encoding: unicode
+  pool: 5
+
+
+production:
+  encoding: unicode
+  pool: 5

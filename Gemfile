@@ -18,6 +18,7 @@ gem 'fuzzy_match', '~> 2.1'
 gem 'mailjet'
 gem 'encryption'
 gem 'cryptice-passgen', '~> 0.1.2'
+gem 'puma'
 
 group :test do
   gem 'rspec'
