@@ -19,12 +19,13 @@ gem 'fuzzy_match', '~> 2.1'
 gem 'mailjet'
 gem 'encryption'
 gem 'cryptice-passgen', '~> 0.1.2'
+gem 'puma'
 
 group :development do
   gem 'sqlite3', '~> 1.3.6'
  end
 
-group :test do
+ group :test do
   gem 'rspec'
   gem 'capybara'
   gem 'rack-test'
