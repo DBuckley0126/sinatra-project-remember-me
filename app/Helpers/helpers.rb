@@ -173,7 +173,7 @@ class Helpers
           'Name'=> "#{user.first_name} #{user.last_name}"
         }
       ],
-      'TemplateID'=> ENV['MAILJET_TEMPLATE_ID'],
+      'TemplateID'=> ENV['MAILJET_TEMPLATE_ID'].to_i,
       'TemplateLanguage'=> true,
       'Subject'=> "Remember Me Account Confirmation",
       'Variables'=> {
