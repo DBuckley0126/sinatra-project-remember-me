@@ -25,7 +25,7 @@ class ApplicationController < Sinatra::Base
       flash[:alert]
     erb :index
     else
-      redirect '/signup'
+      redirect 'https://www.myremember.co.uk/signup'
     end
   end
 
