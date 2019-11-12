@@ -20,6 +20,7 @@ gem 'mailjet'
 gem 'encryption'
 gem 'cryptice-passgen', '~> 0.1.2'
 gem 'puma'
+gem "barnes"
 
 group :development do
   gem 'sqlite3', '~> 1.3.6'
