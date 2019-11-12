@@ -29,4 +29,15 @@ class ApplicationController < Sinatra::Base
     end
   end
 
+  get '/terms-of-use' do
+    erb :'terms/terms_of_use'
+  end
+
+  
+  get '/privacy-policy' do
+    erb :'terms/privacy_policy'
+  end
+
+
+
 end
