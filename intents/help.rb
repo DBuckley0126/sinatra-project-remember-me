@@ -1,0 +1,3 @@
+intent "AMAZON.HelpIntent" do
+  tell("If you would like to create a Remember, ask 'remember where I left my keys with the answer in the kitchen draw'. I will then prompt you for confimation, which you can reply 'yes' or 'no'. When you are struggling to remember something, simply ask 'do you know I left my keys'. You can also go to www.remember me.co.uk to access your dashboard where you can create and edit your Remembers.")
+end

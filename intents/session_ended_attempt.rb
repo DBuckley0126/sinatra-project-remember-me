@@ -1,3 +1,3 @@
 intent "SessionEndedRequest" do
-  respond
+  tell("Goodbye from Remember Me")
 end
