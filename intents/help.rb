@@ -1,3 +1,3 @@
 intent "AMAZON.HelpIntent" do
-  ask("If you would like to create a Remember, say for example, 'remember where I left my keys with the answer in the kitchen draw'. I will then prompt you for confimation, which you can reply 'yes' or 'no'. When you are struggling to remember something, simply ask me 'do you know where I left my keys'. You can also go to www.my remember.co.uk to access your dashboard where you can create and edit your Remembers.")
+  ask("If you would like to create a Remember, say for example, 'remember where I left my keys with the answer in the kitchen draw'. I will then prompt you for confimation, which you can reply 'yes' or 'no'. When you are struggling to remember something, simply ask me 'do you know where I left my keys'. You can also go to www.my remember.co.uk to access your dashboard where you can create and edit your Remembers. Say 'link remember me account' and you will be given a unique code to link your remember me account")
 end

@@ -2,5 +2,8 @@
 <h1>Welcome, <%=@user.first_name%></h1>
 
 <a href="/remembers">See Remembers</a>
+<% if @user.alexa_linked == false %>
+<a href="/user/link-alexa">Link Alexa account</a>
+<% end %>
 <a href="/user/password-reset">Reset password</a>
 <a href="/logout">Logout</a>

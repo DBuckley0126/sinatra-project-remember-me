@@ -61,37 +61,22 @@ class Helpers
 
   # Handles Alexa authentication
   #
-  # @param [String] access_token is a user API access token sent with the Alexa HTTP request
+  # @param [String] alexa_id is a user_id sent with the Alexa HTTP request
   #
   # @return [Hash] returns a hash containing a history key with value explaining how account was created/linked. Also a user key with a User object
   #
   # @type [Hash]
-  def self.auth_alexa(access_token)
-    #method setup
-    client = Net::HTTP
-    uri = URI.parse("#{AMAZON_API_URL}?access_token=#{access_token}")
-    first_name = JSON.parse(client.get(uri))["name"].split(" ").first
-    last_name = JSON.parse(client.get(uri))["name"].split(" ").last
-    email = JSON.parse(client.get(uri))["email"]
+  def self.auth_alexa(alexa_id)
 
     #find alexa connected account > return found connected user
-    user = User.find_by(access_token: access_token)
+    user = User.find_by(alexa_id: alexa_id)
     return {:history => "alexa connected account", :user => user} if user
 
-    #find previously made account without alexa auth
-    user = User.find_by(email: email)
-
-    if user
-      user.access_token = access_token
-      user.first_name = first_name
-      user.last_name = last_name
-      user.save
-      return {:history => "account linked", :user => user}
-    else #make new user if no account has been found
-      new_user = User.create(first_name: first_name, last_name: last_name, email: email, access_token: access_token, password: Helpers.password_generator, verified: false)
-      return {:history => "account created", :user => new_user}
-    end
+    new_user = User.create(alexa_id: alexa_id, password: Helpers.password_generator, unique_code: Helpers.password_generator)
+    return {:history => "account created", :user => new_user}
   end
+ 
+
 
   # Creates remember from Alexa request
   #
@@ -101,7 +86,7 @@ class Helpers
   #
   # @type [Remember]
   def self.add_alexa_remember(request)
-    response = Helpers.auth_alexa(request.user_access_token)
+    response = Helpers.auth_alexa(request.user_id)
     remember = Helpers.create_remember(response[:user], request.slot_value("phrase"), request.slot_value("answer"))
     remember
   end
@@ -156,12 +141,12 @@ class Helpers
   # Sends a verification email
   #
   # @param [User] user is a User Object
-  # @param [String] temp_pass is the temporary password to be sent with the email
+  # @param [String] temp_code is the code to be sent with the email
   #
   # @return [Hash] Returns hash of message attributes
   #
   # @type [Hash]
-  def self.send_verification_email(user, temp_pass) 
+  def self.send_email_via_mailjet(user, temp_code) 
     variable = Mailjet::Send.create(messages: [{
       'From'=> {
         'Email'=> ENV['FROM_EMAIL'],
@@ -177,7 +162,7 @@ class Helpers
       'TemplateLanguage'=> true,
       'Subject'=> "Remember Me Account Confirmation",
       'Variables'=> {
-        "temp_password" => temp_pass
+        "temp_password" => temp_code
       }
     }])
     p variable.attributes['Messages']
@@ -224,7 +209,7 @@ class Helpers
   # @return [String] returns randomly generated password
   #
   def self.password_generator 
-    Passgen::generate
+    Passgen::generate.downcase
   end
 
   # Checks if provided email has already been veriefied
@@ -234,40 +219,38 @@ class Helpers
   # @return [Boolean]
   #
   # @type [Boolean]
-  def self.alexa_email_verified_check(email) 
-    User.find_by(email: email, verified: true)? true : false
+  def self.account_email_verified_check(email) 
+    User.find_by(email: email, email_verified: true)? true : false
   end
 
-  # Sends temporary password email
+  # Sends verififcation email
   #
-  # @param [String] email is the email the user provided
+  # @param [Object] current user object
   #
-  def self.alexa_temp_password_send(email) 
-    user = User.find_by(email: email, verified: false)
-    temp_pass = Helpers.password_generator
-    encryption_hash = Helpers.encrypt(temp_pass)
-    user.password = temp_pass
-    user.temp_password = encryption_hash["encrypted_string"]
+  def self.verififcation_email_send(user)
+    temp_code = Helpers.password_generator
+    encryption_hash = Helpers.encrypt(temp_code)
+    user.temp_code = encryption_hash["encrypted_string"]
     user.vector = encryption_hash["vector"]
     user.save
-    Helpers.send_verification_email(user, temp_pass)
+    Helpers.send_email_via_mailjet(user, temp_code)
   end
 
-  # Checks if temporary password matches on in database
+  # Checks if temp code matches one in database
   #
-  # @param [String] email is the email the user provided 
-  # @param [String] temp_password is the temporary password the user provided
+  # @param [String] email is the users email that requires verififcation
+  # @param [String] temp_code is the temporary code the user provided
   #
   # @return [User, Boolean] returns a User object if temporary password matches and 
   # returns false if temporary password does not match one in datbase
   #
   # @type [User, Boolean]
-  def self.alexa_temp_password_check(email, temp_password) 
-    user = User.find_by(email: email, verified: false)
-    decrypted_temp_pass = Helpers.decrypt(user.temp_password, user.vector)
-    if decrypted_temp_pass == temp_password
-      user.verified = true
-      user.temp_password = ""
+  def self.email_temp_code_check(email, temp_code) 
+    user = User.find_by(email: email)
+    decrypted_temp_code = Helpers.decrypt(user.temp_code, user.vector)
+    if decrypted_temp_code == temp_code
+      user.email_verified = true
+      user.temp_code = ""
       user.save
       user
     else
@@ -285,6 +268,29 @@ class Helpers
     if user && user.authenticate(params["info"]["old_password"])
       user.password = params["user"]["password"]
       user.save
+    end
+  end
+
+
+  #
+  # Merges Alexa account to user account, destroys Alexa account
+  #
+  # @param [Object] user is the user that is to be linked to the Alexa user
+  # @param [String] unique_code is the unique code to identify the Alexa user
+  #
+  # @return [Boolean] true if user is linked to Alexa account successfully
+  #
+  def self.link_user_to_alexa(user, unique_code)
+    alexa_user = User.find_by(unique_code: unique_code)
+    if alexa_user
+      user.alexa_id = alexa_user.alexa_id
+      user.alexa_linked = true
+      user.save
+      Remember.where(user_id: alexa_user.id).update_all(user_id: user.id)
+      alexa_user.destroy
+      true
+    else
+      false
     end
   end
 

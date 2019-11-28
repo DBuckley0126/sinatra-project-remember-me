@@ -23,8 +23,10 @@ class ApplicationController < Sinatra::Base
     if Helpers.is_logged_in?(session)
       @user = Helpers.current_user(session)
       flash[:alert]
-    erb :index
+      flash[:error]
+      erb :index
     else
+      redirect '/signup' if ENV['SINATRA_ENV'] == "development"
       redirect 'https://www.myremember.co.uk/signup'
     end
   end
