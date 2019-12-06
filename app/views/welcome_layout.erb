@@ -11,30 +11,20 @@
 
     <meta name="viewport" content="initial-scale=1.0 , minimum-scale=1.0 , maximum-scale=1.0" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-    <link rel="stylesheet" href="/stylesheets/main.css" />
-
+    <link rel="stylesheet" href="/stylesheets/welcome.css" />
   </head>
   <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <div class="wrapper">
 
-    <header>
-      <h2>Remember Me</h2>
-      <div id="container-header-buttons">
-        <a class="link-button" href="/user/account">Account</a>
-        <a class="link-button" href="/logout">Logout</a>
-      </div>
-    </header>
-
-      <div id="flash-flex-box">
-        <% flash.keys.each do |type| %>
-          <div data-alert class="flash-bar <%=type%>">
-            <p><%= flash[type] %></p>
-            <a href="#" class="close">&times;</a>
-          </div>
-        <% end %>
-      </div>
+        <div id="flash-flex-box">
+          <% flash.keys.each do |type| %>
+            <div data-alert class="flash-bar <%=type%>">
+              <p><%= flash[type] %></p>
+              <a href="#" class="close">&times;</a>
+            </div>
+          <% end %>
+        </div>
 
       <%= yield %>
 
@@ -46,6 +36,7 @@
         </div>
       </footer>
 
+    </div>
 
     <script>
     

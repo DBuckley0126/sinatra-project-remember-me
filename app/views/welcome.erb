@@ -1,0 +1,82 @@
+<div id="container-title">
+<h1>Remember Me</h1>
+</div>
+<div id="container-alexa">
+  <p>works with</p>
+  <img id="logo"src="/images/amazon_logo@2x.png" alt="Amazon Alexa">
+</div>
+
+<div id="container-buttons">
+  <button class="button-animation" id="button-show-signup" type="button">Signup</button>
+  <button class="button-animation" id="button-show-login" type="button">Login</button>
+</div>
+
+<div id="container-face">
+  <img src="/images/person.png" alt="Logo">
+</div>
+
+<div class="form" id="signup-form">
+  <div id="container-title">
+    <img src="/images/back_button.png" alt="Back">
+    <h2>Signup</h2>
+  </div>
+
+  <form method="post" action="/signup"><br>
+    <input type="text" placeholder="First name" name="first_name" id="first_name"><br>
+    <input type="text" placeholder="Last name" name="last_name" id="last_name"><br>
+    <input type="email" placeholder="Email" name="email" id="email"><br>
+    <input type="password" placeholder="Password" name="password" id="password"><br>
+    <input class="submit button-animation" id="signup-input" type="Submit" value="Signup">
+  </form>
+</div>
+
+<div class="form" id="login-form">
+  <div id="container-title">
+    <img src="/images/back_button.png" alt="Back">
+    <h2>Login</h2>
+  </div>
+
+  <form method="post" action="/login"><br>
+    <input type="email" placeholder="Email" name="email" id="email"><br>
+    <input type="password" placeholder="Password" name="password" id="password"><br>
+    <input class="submit button-animation" id="submit-login" type="Submit" value="Login">
+  </form>
+</div>
+
+<script>
+
+  $( "#button-show-signup" ).click(function() {
+    
+    $( "#container-buttons" ).removeClass( "unfade" ).addClass( "fade" );
+    $( "#container-face img" ).removeClass( "form_move_face_original" ).addClass( "form_move_face" );
+    $( "#signup-form" ).removeClass( "move_form_out_view" ).addClass( "move_form_into_view" );
+ 
+  });
+
+    $( "#button-show-login" ).click(function() {
+ 
+    $( "#container-buttons" ).removeClass( "unfade" ).addClass( "fade" );
+    $( "#container-face img" ).removeClass( "form_move_face_original" ).addClass( "form_move_face" );
+    $( "#login-form" ).removeClass( "move_form_out_view" ).addClass( "move_form_into_view" );
+ 
+  });
+
+    $( ".form #container-title img" ).click(function() {
+ 
+    $( "#container-buttons" ).removeClass( "fade" ).addClass("unfade");
+    $( "#container-face img" ).removeClass( "form_move_face" ).addClass("form_move_face_original");
+    $( this ).parent().parent().removeClass( "move_form_into_view" ).addClass( "move_form_out_view");
+    
+  });
+
+  $( ".button-animation" ).hover(function() {
+    $( this ).removeClass( "button_unhover" );
+    $( this ).addClass( "button_hover" );
+  }, function() {
+    $( this ).removeClass( "button_hover" );
+    $( this ).addClass( "button_unhover" );
+  });
+
+</script>
+
+

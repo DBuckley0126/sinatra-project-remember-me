@@ -20,16 +20,14 @@ class ApplicationController < Sinatra::Base
   end
 
   get "/" do
-    if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      flash[:alert]
-      flash[:error]
-      erb :index
-    else
-      redirect '/signup' if ENV['SINATRA_ENV'] == "development"
-      redirect 'https://www.myremember.co.uk/signup'
-    end
+    user_check(session)
+    @user = Helpers.current_user(session)
+    @remembers = Remember.where(user_id: @user.id)
+    flash[:alert]
+    flash[:error]
+    erb :'index'
   end
+
 
   get '/terms-of-use' do
     erb :'terms/terms_of_use'
@@ -38,6 +36,22 @@ class ApplicationController < Sinatra::Base
   
   get '/privacy-policy' do
     erb :'terms/privacy_policy'
+  end
+
+  private
+
+  def user_check(session)
+    result = Helpers.is_logged_in?(session)
+
+    if result == "GOOD"
+      true
+    elsif result == "UNVERIFIED"
+      flash[:error] = "Your email needs to be verified!"
+      redirect '/user/email-verification'
+    else
+      redirect '/welcome' if ENV['SINATRA_ENV'] == "development"
+      redirect 'https://www.myremember.co.uk/welcome'
+    end
   end
 
 

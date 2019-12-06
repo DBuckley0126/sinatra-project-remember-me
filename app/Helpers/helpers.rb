@@ -11,9 +11,14 @@ class Helpers
   # @type [Boolean]
   def self.is_logged_in?(session)
     if session
-      User.find_by_id(session["user_id"])? true : false
-    else
-      false
+      user = User.find_by_id(session["user_id"])
+      if !user
+        "NIL"
+      elsif user
+        "GOOD" if user.email_verified == true
+      else
+        "UNVERIFIED"
+      end
     end
   end
 

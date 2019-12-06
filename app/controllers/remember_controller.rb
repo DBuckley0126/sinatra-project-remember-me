@@ -1,75 +1,61 @@
 class RememberController < ApplicationController
 
-  get '/remembers' do
-    if Helpers.is_logged_in?(session)
-    @user = Helpers.current_user(session)
-    @remembers = Remember.where(user_id: @user.id)
-    flash[:alert]
-    erb :'remembers/remembers'
-    else
-      redirect '/signup'
-    end
-  end
-
   get '/remembers/new' do
-    if Helpers.is_logged_in?(session)
-      erb :'remembers/new'
-    else
-      redirect '/signup'
-    end
+    user_check(session)
+    erb :'remembers/new'
   end
 
   post '/remembers' do
-    if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      Helpers.create_remember(@user, params[:phrase], params[:answer])
-      flash[:alert] = "Created new Remember"
-      redirect '/remembers'
-    else
-      redirect '/signup'
-    end
+    user_check(session)
+    @user = Helpers.current_user(session)
+    Helpers.create_remember(@user, params[:phrase], params[:answer])
+    redirect '/'
   end
 
   get '/remembers/:id/edit' do
-    if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      @remember = Remember.find_by(user_id: @user.id, id: params[:id])
-      erb :'/remembers/edit'
-    else
-      redirect '/signup'
-    end
+    user_check(session)
+    @user = Helpers.current_user(session)
+    @remember = Remember.find_by(user_id: @user.id, id: params[:id])
+    erb :'/remembers/edit'
   end
 
   get '/remembers/:id' do
-    if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      @remember = Remember.find_by(user_id: @user.id, id: params[:id])
-      flash[:alert]
-      erb :'remembers/view'
-    else
-      redirect '/signup'
-    end
+    user_check(session)
+    @user = Helpers.current_user(session)
+    @remember = Remember.find_by(user_id: @user.id, id: params[:id])
+    flash[:alert]
+    erb :'remembers/view'
   end
 
   delete '/remembers/:id' do
-    if Helpers.is_logged_in?(session)
-      @user = Helpers.current_user(session)
-      @remember = Remember.find_by(user_id: @user.id, id: params[:id])
-      @remember.destroy
-      flash[:alert] = "Deleted Remember"
-      redirect '/remembers'
-    else
-      redirect '/signup'
-    end
+    user_check(session)
+    @user = Helpers.current_user(session)
+    @remember = Remember.find_by(user_id: @user.id, id: params[:id])
+    @remember.destroy
+    flash[:alert] = "Deleted Remember"
+    redirect '/'
   end
   
   patch '/remembers/:id' do
-    if Helpers.is_logged_in?(session)
-      remember = Helpers.update_remember(params, session)
-      flash[:alert] = "Updated Remember"
-      redirect "/remembers/#{remember.id}"
+    user_check(session)
+    remember = Helpers.update_remember(params, session)
+    flash[:alert] = "Updated Remember"
+    redirect "/remembers/#{remember.id}"
+  end
+
+  private
+
+  def user_check(session)
+    result = Helpers.is_logged_in?(session)
+
+    if result == "GOOD"
+      true
+    elsif result == "UNVERIFIED"
+      flash[:error] = "Your email needs to be verified!"
+      redirect '/user/email-verification'
     else
-      redirect '/signup'
+      redirect '/welcome' if ENV['SINATRA_ENV'] == "development"
+      redirect 'https://www.myremember.co.uk/welcome'
     end
   end
 

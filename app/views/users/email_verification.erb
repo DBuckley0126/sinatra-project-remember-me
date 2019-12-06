@@ -1,9 +1,14 @@
-<h1>Verify Email</h1>
-<h3>A verification email has been sent to the email address <%=@email%></h3>
-<h3>Please input the temporary code below</h3>
-
-<form method="post" action="/user/email-verification">
-<label for="temp_code">Temporary code</label>
-<input type="text" name="temp_code" id="temp_code">
-<input type="submit" value ="Submit">
-</form>
+<div class="flex-container-center">
+  <h3>A verification email has been sent to the email address</h3>
+  <h3><%=@email%><h3>
+  <h4>Please input the temporary code below</h4>
+  <div id="flex-container-input">
+    <form method="post" action="/user/email-verification">
+      <input type="text" placeholder="Temporary code"name="temp_code" id="temp_code">
+      <input type="image" src="/images/forwards-button.png" alt="Submit" id="submit">
+    </form>
+  </div>
+  <form method="post" action="/user/email-verification-resend">
+    <input class="submit button-animation" id="resend-email" type="Submit" value="Resend Email">
+  </form>
+</div>

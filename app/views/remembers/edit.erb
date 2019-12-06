@@ -8,3 +8,31 @@
 <input type="submit" value ="Submit">
 <input type="hidden" id="hidden" name="_method" value="PATCH">
 </form>
+
+<div id="container-page-title">
+  <a id="back-page-button" alt="back" href="/remembers/<%=@remember.id%>"><img src="/images/back_button.png"></a>
+  <h2>Edit Remember</h2>
+</div>
+
+<div class="container-remember-input">
+
+  <form method="post" action="/remembers/<%=@remember.id%>">
+    <div class="remember-flex-box">
+      <div class="remember-shape-bottom">
+        <div id="bottom-text-container"><textarea rows="2" maxlength="49" name="remember[answer]" id="answer" placeholder="Answer" ><%=@remember.answer%></textarea></div>
+      </div>
+      <div class="remember-shape-top">
+        <div id="top-text-container"><textarea rows="2" maxlength="49" name="remember[phrase]" id="phrase" placeholder="Phrase" ><%=@remember.phrase%></textarea></div>
+      </div>
+   </div>
+  <input type="hidden" id="hidden" name="_method" value="PATCH">
+   <input id="submit" type="submit" value ="Submit">
+  </form>
+
+</div>
+
+<div id="container-face-index">
+  <img src="/images/person.png" alt="Logo">
+</div>
+
+

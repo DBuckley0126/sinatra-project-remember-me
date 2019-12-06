@@ -1,9 +1,118 @@
-<h1>Index</h1>
-<h1>Welcome, <%=@user.first_name%></h1>
 
-<a href="/remembers">See Remembers</a>
-<% if @user.alexa_linked == false %>
-<a href="/user/link-alexa">Link Alexa account</a>
-<% end %>
-<a href="/user/password-reset">Reset password</a>
-<a href="/logout">Logout</a>
+<div id="container-header-left-links">
+  <a class="link-button" href="/remembers/new">New Remember</a>
+</div>
+
+<div class="remember-slider-and-buttons">
+
+  <div class="remember-slider">
+
+    <%@remembers.each do |remember|%>
+
+      <div class="remember-flex-box">
+        <a href="/remembers/<%=remember.id%>"></a>
+        <div class="remember-shape-bottom">
+          <div id="bottom-text-container"><p><%=remember.answer%></p></div>
+        </div>
+        <div class="remember-shape-top">
+          <div id="top-text-container"><p><%=remember.phrase%></p></div>
+        </div>
+      </div>
+
+    <%end%>
+
+  </div>
+
+  <div id="slider-buttons">
+    <img id="slider-button-back" src="/images/back_button.png" alt="Back">
+    <img id="slider-button-forward" src="/images/forwards-button.png" alt="Back">
+  </div>
+
+</div>
+
+<div id="no-remembers-alert">
+  <p>Looks like you have no Remembers!</p>
+</div>
+
+<div id="container-face-index">
+  <img src="/images/person.png" alt="Logo">
+</div>
+
+
+<script>
+
+  var counter = 1;
+  var numItems = $('.remember-flex-box').length;
+
+  $( document ).ready(function() {
+    if (numItems == 0){
+      $( "#slider-buttons" ).css("opacity", "0");
+      $( "#no-remembers-alert" ).css("display", "flex");
+    }
+
+    if (numItems == 1){
+      $( "#slider-buttons" ).css("opacity", "0");
+    }
+
+    if (counter == 1){
+      $( "#slider-button-forward" ).css("display", "none");
+    }
+  });
+
+  
+  $(".remember-flex-box").click(function() {
+    window.location = $(this).find("a").attr("href"); 
+    return false;
+  });
+
+  $("#slider-button-back").click(function() {
+    if (checkCounterLeft()) {
+      $( ".remember-slider" ).animate({left: "-=26vmax"}, 1000);
+    }
+
+    if (counter > 1){
+      $( "#slider-button-forward" ).css("display", "none");
+    }
+
+    if (counter == numItems){
+      $( "#slider-button-back" ).css("display", "none");
+    }
+  });
+
+    $("#slider-button-forward").click(function() {
+    if (checkCounterRight()) {
+      $( ".remember-slider" ).animate({left: "+=26vmax"}, 1000);
+
+    if (counter < numItems){
+      $( "#slider-button-back" ).css("display", "block");
+    }
+
+    if (counter == 1){
+      $( "#slider-button-forward" ).css("display", "none");
+    }
+    }
+  });
+
+
+  function checkCounterRight() 
+  {
+  if (counter > 1 )
+  {
+    counter--;
+    return true;
+  }
+    return false;
+  }
+
+  function checkCounterLeft() 
+  {
+  if (counter < numItems )
+  {
+    counter++;
+    return true;
+  }
+
+  return false;
+  }
+
+</script>

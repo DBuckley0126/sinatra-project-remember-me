@@ -1,8 +1,27 @@
-<h1>New Remember</h1>
-<form method="post" action="/remembers">
-<label for="phrase">Phrase</label>
-<input type="text" name="phrase" id="phrase">
-<label for="answer">Answer</label>
-<input type="text" name="answer" id="answer">
-<input type="submit" value ="Submit">
-</form>
+<div id="container-page-title">
+  <a id="back-page-button" alt="back" href="/"><img src="/images/back_button.png"></a>
+  <h2>New Remember</h2>
+</div>
+
+<div class="container-remember-input">
+
+  <form method="post" action="/remembers">
+    <div class="remember-flex-box">
+      <div class="remember-shape-bottom">
+        <div id="bottom-text-container"><textarea rows="2" maxlength="49" name="answer" id="answer" placeholder="Answer" ></textarea></div>
+      </div>
+      <div class="remember-shape-top">
+        <div id="top-text-container"><textarea rows="2" maxlength="49" name="phrase" id="phrase" placeholder="Phrase" ></textarea></div>
+      </div>
+   </div>
+
+   <input id="submit" type="submit" value ="Submit">
+  </form>
+
+</div>
+
+<div id="container-face-index">
+  <img src="/images/person.png" alt="Logo">
+</div>
+
+
