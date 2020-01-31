@@ -1,6 +1,6 @@
 # sinatra-project-remember-me
 
-A Sinatra web application to help you to remember the little things in life with a simple phrase and answer This will also have a Alexa interface to interact with the service.  
+A Sinatra web application to help you to remember the little things in life with a simple phrase and answer. This will also have a Alexa interface to interact with the service.  
 
 Where did I leave my keys?  
 What time did I walk the dog?  
